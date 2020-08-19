@@ -1,0 +1,6 @@
+main: me.gallent.HSUVote.HSUVoteMain
+name: HSUVote
+version: 0.1
+author: Gallent
+
+depend: [HSUPointCounter]
