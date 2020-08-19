@@ -3,18 +3,21 @@ package me.gallent.HSUVote;
 import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -40,11 +43,52 @@ public class HSUVoteMain extends JavaPlugin implements Listener{
 	@Override
 	public void onEnable() {
 		pCount.pointSys.test1();
+		saveDefaultConfig();
+		random1();
 	}
 
 	@Override
 	public void onDisable() {
 
+	}
+	
+	//Weighted randomness v1:
+
+	public Integer maxWeight=0;
+	public Integer weightPos=0;
+	public boolean weightMatch = false;
+	public String selectedItem=null;
+
+	public void random1(){
+		this.maxWeight =0;
+		this.weightPos=0;
+		ConfigurationSection section = getConfig().getConfigurationSection("Items");
+		section.getKeys(false).forEach(key ->{
+			int Weight = getConfig().getInt("Items."+key+".Weight");
+			maxWeight=maxWeight+Weight;
+		});
+		Bukkit.getConsoleSender().sendMessage("MaxWeight="+maxWeight.toString());
+		int weightSel=ThreadLocalRandom.current().nextInt(maxWeight);
+		Bukkit.getConsoleSender().sendMessage("Random Number="+weightSel);
+		section.getKeys(false).forEach(key ->{
+			
+			int Weight = getConfig().getInt("Items."+key+".Weight");
+			weightPos=weightPos+Weight;
+			if(weightMatch) {
+				return;
+			}
+			if(weightSel>weightPos) {
+				Bukkit.getConsoleSender().sendMessage("Stepped over "+Weight);
+				return;
+			}
+			Bukkit.getConsoleSender().sendMessage("Selected: "+key);
+			weightMatch=true;
+			this.selectedItem=key;
+			return;
+		});
+		if(selectedItem.equalsIgnoreCase("mpoint")) {return;}
+		if(selectedItem.equalsIgnoreCase("spoint")) {return;}
+		if(selectedItem.equalsIgnoreCase("gpoint")) {return;}
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {

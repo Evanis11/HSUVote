@@ -1,4 +1,12 @@
 Items:
-  - mpoint
-  - spoint
-  - gpoint
+  mpoint:
+    Weight: 1
+  spoint:
+    Weight: 1
+  gpoint:
+    Weight: 1
+  Sword Of Tests:
+    Name: '&6Sword Of Tests'
+    Description:
+      - 
+    Weight: 1
